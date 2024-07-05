@@ -10,23 +10,53 @@ const getInputs = z.object({
 	url: z.string().url(),
 });
 
-router.get(async (req, ctx) => {
+const postInputs = z.object({
+	url: z.string().url(),
+	quality: z.string().optional(),
+	start: z.coerce.number().int().positive().optional(),
+	end: z.coerce.number().int().positive().optional(),
+});
+
+router.get(async (req, _ctx) => {
 	const params = req.nextUrl.searchParams;
 	const inputs = getInputs.parse(Object.fromEntries(params));
-	const url = new URL(inputs.url);
 
-	const domains = ["www.youtube.com", "youtube.com", "m.youtube.com", "youtu.be"];
-	if (!domains.includes(url.hostname)) {
+	if (!ytdl.validateURL(inputs.url)) {
 		throw new Error("Invalid youtube domain.");
 	}
 
-	const info = await ytdl.getInfo(url.toString(), { lang: "pt" });
+	const info = await ytdl.getInfo(inputs.url, { lang: "pt" });
 	const data = {
 		streaming: info.player_response.streamingData,
 		details: info.player_response.videoDetails,
 	};
 
 	return NextResponse.json({ message: "Sucesso", data });
+});
+
+router.post(async (req, _ctx) => {
+	const inputs = postInputs.parse(await req.json());
+
+	if (!ytdl.validateURL(inputs.url)) {
+		throw new Error("Invalid youtube domain.");
+	}
+
+	const iterator = ytdl(inputs.url, {
+		lang: "pt",
+		quality: inputs.quality || "highest",
+		range: { start: inputs.start, end: inputs.end },
+	}).iterator();
+
+	const stream = new ReadableStream({
+		async start(controller) {
+			for await (const chunk of iterator) {
+				controller.enqueue(chunk);
+			}
+			controller.close();
+		},
+	});
+
+	return new Response(stream);
 });
 
 const handler = router.handler(handlerConfig);
