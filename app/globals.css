@@ -4,9 +4,12 @@
 
 .main-gradient {
 	background: #edfac4;
-	background: -moz-radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
-	background: -webkit-radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
 	background: radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
+}
+
+.slider-gradient {
+	background: #242424;
+	background: linear-gradient(0deg, #242424 10%, #00000000 100%);
 }
 
 .main-clip {

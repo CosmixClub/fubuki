@@ -47,7 +47,7 @@ export default function RootLayout({
 			<head>
 				<ColorSchemeScript />
 			</head>
-			<body className={inter.variable}>
+			<body className={`${inter.variable} font-sans`}>
 				<MantineProvider theme={theme}>{children}</MantineProvider>
 			</body>
 		</html>
