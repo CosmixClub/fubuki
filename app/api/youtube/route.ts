@@ -10,6 +10,14 @@ const getInputs = z.object({
 	url: z.string().url(),
 });
 
+export type GetOutputs = {
+	message: string;
+	data: {
+		streaming: ytdl.videoInfo["player_response"]["streamingData"];
+		details: ytdl.videoInfo["player_response"]["videoDetails"];
+	};
+};
+
 const postInputs = z.object({
 	url: z.string().url(),
 	quality: z.string().optional(),
@@ -26,7 +34,7 @@ router.get(async (req, _ctx) => {
 	}
 
 	const info = await ytdl.getInfo(inputs.url, { lang: "pt" });
-	const data = {
+	const data: GetOutputs["data"] = {
 		streaming: info.player_response.streamingData,
 		details: info.player_response.videoDetails,
 	};

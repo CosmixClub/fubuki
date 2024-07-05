@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.main-gradient {
+	background: #edfac4;
+	background: -moz-radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
+	background: -webkit-radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
+	background: radial-gradient(circle farthest-corner at top center, #edfac4 0%, #00000000 60%);
+}
+
+.main-clip {
+	@apply bg-clip-text text-transparent;
+	background-image: linear-gradient(90deg, #80af81, #9cdba6);
+}
