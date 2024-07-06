@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { GetOutputs } from "@/app/api/youtube/route";
@@ -12,7 +13,12 @@ export default async function Page({ params }: Readonly<{ params: { url: string 
 	return (
 		<main className="main-gradient flex min-h-[100svh] w-full flex-col gap-5 bg-slate-50 px-10">
 			<header className="flex w-full flex-col items-start justify-center gap-2 py-5">
-				<span className="main-clip text-2xl font-bold">Fubuki</span>
+				<Link
+					href="/"
+					className="main-clip text-2xl font-bold"
+				>
+					Fubuki
+				</Link>
 			</header>
 
 			<View {...{ url, data }} />
