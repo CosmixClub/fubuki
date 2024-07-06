@@ -10,7 +10,7 @@ type Fields = {
 	url: string;
 };
 
-export const YoutubeForm: React.FC = memo(function YoutubeForm({}) {
+export const Form: React.FC = memo(function Form({}) {
 	const {
 		register,
 		handleSubmit,
@@ -22,6 +22,7 @@ export const YoutubeForm: React.FC = memo(function YoutubeForm({}) {
 		async fields => {
 			let service = "youtube";
 			if (fields.url.includes("tiktok")) service = "tiktok";
+			if (fields.url.includes("instagram")) service = "instagram";
 
 			router.push(`/${service}/${encodeURIComponent(fields.url)}`);
 		},

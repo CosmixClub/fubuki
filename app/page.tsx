@@ -1,4 +1,4 @@
-import { YoutubeForm } from "./_components/youtube-form";
+import { Form } from "./_components/form";
 
 export default function Home() {
 	return (
@@ -9,7 +9,7 @@ export default function Home() {
 			</header>
 
 			<section className="flex w-full flex-col items-center justify-center gap-10">
-				<YoutubeForm />
+				<Form />
 			</section>
 		</main>
 	);
