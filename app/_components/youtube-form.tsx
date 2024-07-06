@@ -20,7 +20,10 @@ export const YoutubeForm: React.FC = memo(function YoutubeForm({}) {
 
 	const onSubmit: SubmitHandler<Fields> = useCallback(
 		async fields => {
-			router.push(`/youtube/${encodeURIComponent(fields.url)}`);
+			let service = "youtube";
+			if (fields.url.includes("tiktok")) service = "tiktok";
+
+			router.push(`/${service}/${encodeURIComponent(fields.url)}`);
 		},
 		[router],
 	);
@@ -33,7 +36,8 @@ export const YoutubeForm: React.FC = memo(function YoutubeForm({}) {
 			>
 				<TextInput
 					type="url"
-					label="Insira a URL do Youtube:"
+					label="Insira a URL desejada:"
+					description="Disponível: Youtube e TikTok."
 					placeholder="Digite aqui:"
 					{...register("url", {
 						required: true,
