@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import ytdl from "ytdl-core";
-import { z } from "zod";
+import { ZodError, z } from "zod";
 
 import { api, handlerConfig } from "@/lib/api";
 
@@ -21,8 +21,8 @@ export type GetOutputs = {
 const postInputs = z.object({
 	url: z.string().url(),
 	quality: z.string().optional(),
-	start: z.coerce.number().int().positive().optional(),
-	end: z.coerce.number().int().positive().optional(),
+	start: z.coerce.number().int().min(0).optional(),
+	end: z.coerce.number().int().min(10).optional(),
 });
 
 router.get(async (req, _ctx) => {
@@ -46,13 +46,20 @@ router.post(async (req, _ctx) => {
 	const inputs = postInputs.parse(await req.json());
 
 	if (!ytdl.validateURL(inputs.url)) {
-		throw new Error("Invalid youtube domain.");
+		throw new ZodError([
+			{
+				message: "Invalid youtube domain.",
+				path: ["url"],
+				code: "invalid_string",
+				validation: "url",
+			},
+		]);
 	}
 
 	const iterator = ytdl(inputs.url, {
 		lang: "pt",
 		quality: inputs.quality || "highest",
-		range: { start: inputs.start, end: inputs.end },
+		range: inputs.start || inputs.end ? { start: inputs.start, end: inputs.end } : undefined,
 	}).iterator();
 
 	const stream = new ReadableStream({

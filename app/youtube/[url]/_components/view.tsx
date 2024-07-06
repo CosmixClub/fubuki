@@ -14,8 +14,8 @@ export type ViewProps = {
 };
 
 type Fields = {
-	start: number;
-	end: number;
+	start_end: [number, number];
+	quality: string;
 };
 
 const getThumbnail = (data: GetOutputs["data"]) => {
@@ -32,8 +32,12 @@ const formatSeconds = (seconds: number) => {
 export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 	const {
 		handleSubmit,
+		setValue,
+		watch,
 		formState: { isSubmitting },
-	} = useForm<Fields>();
+	} = useForm<Fields>({ defaultValues: { start_end: [0, Number(data.details.lengthSeconds)] } });
+
+	const start_end = watch("start_end");
 
 	const download: SubmitHandler<Fields> = useCallback(
 		async fields => {
@@ -42,14 +46,14 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ url, start: fields.start, end: fields.end }),
+				body: JSON.stringify({ url }),
 			});
 			const blob = await response.blob();
 			const media = URL.createObjectURL(blob);
 
 			const a = document.createElement("a");
 			a.href = media;
-			a.download = data.details.title;
+			a.download = data.details.title + "." + "mp4";
 			a.click();
 
 			URL.revokeObjectURL(media);
@@ -94,6 +98,8 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 								max={Number(data.details.lengthSeconds)}
 								step={1}
 								label={formatSeconds}
+								value={start_end}
+								onChange={value => setValue("start_end", value)}
 							/>
 						</div>
 					</div>
