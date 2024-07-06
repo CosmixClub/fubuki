@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { memo, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -14,6 +15,7 @@ export type ViewProps = {
 };
 
 type Fields = {
+	url: string;
 	start_end: [number, number];
 	quality: string;
 };
@@ -34,6 +36,7 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 		handleSubmit,
 		setValue,
 		watch,
+		register,
 		formState: { isSubmitting },
 	} = useForm<Fields>({
 		defaultValues: {
@@ -43,8 +46,16 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 		},
 	});
 
+	const router = useRouter();
 	const start_end = watch("start_end");
 	const quality = watch("quality");
+
+	const changeUrl: SubmitHandler<Fields> = useCallback(
+		({ url }) => {
+			router.push(`/youtube/${encodeURIComponent(url)}`);
+		},
+		[router],
+	);
 
 	const download: SubmitHandler<Fields> = useCallback(
 		async fields => {
@@ -73,12 +84,16 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 
 	return (
 		<section className="flex h-full w-full flex-col gap-6 px-10">
-			<header className="flex w-full items-center gap-4">
+			<form
+				onSubmit={handleSubmit(changeUrl)}
+				className="flex w-full items-center gap-4"
+			>
 				<TextInput
 					type="url"
 					placeholder="Digite a URL:"
 					defaultValue={url}
 					className="w-full"
+					{...register("url")}
 				/>
 				<ActionIcon
 					type="submit"
@@ -87,7 +102,7 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 				>
 					<IconSearch size={16} />
 				</ActionIcon>
-			</header>
+			</form>
 
 			<div className="flex flex-col items-start justify-between gap-4 md:flex-row">
 				<div className="flex w-full flex-col gap-4 md:max-w-[75%]">
