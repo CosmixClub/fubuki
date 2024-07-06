@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { GetOutputs } from "@/app/api/instagram/route";
+import { getURL } from "@/lib/url";
 
 import { View } from "./_components/view";
 
 export default async function Page({ params }: Readonly<{ params: { url: string } }>) {
 	const url = decodeURIComponent(params.url);
-	const req = await fetch(`http://localhost:3000/api/instagram?url=${url}`).catch(() => notFound());
+	const req = await fetch(`${getURL()}/api/instagram?url=${url}`).catch(() => notFound());
 	const { data } = (await req.json()) as GetOutputs;
 
 	return (
