@@ -11,7 +11,7 @@ export default async function Page({ params }: Readonly<{ params: { url: string 
 	const { data } = (await req.json()) as GetOutputs;
 
 	return (
-		<main className="main-gradient flex min-h-[100svh] w-full flex-col gap-5 bg-slate-50 px-10">
+		<main className="main-gradient flex min-h-[100svh] w-full flex-col gap-5 bg-slate-50 px-4 sm:px-10">
 			<header className="flex w-full flex-col items-start justify-center gap-2 py-5">
 				<Link
 					href="/"

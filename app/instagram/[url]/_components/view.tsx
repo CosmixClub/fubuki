@@ -39,7 +39,7 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 	);
 
 	return (
-		<section className="flex h-full w-full flex-col gap-6 px-10">
+		<section className="flex h-full w-full flex-col gap-6 px-0 sm:px-10">
 			<form
 				onSubmit={handleSubmit(changeUrl)}
 				className="flex w-full items-center gap-4"

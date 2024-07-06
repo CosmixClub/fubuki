@@ -3,12 +3,12 @@ import { IconSearch } from "@tabler/icons-react";
 
 export default async function Loading() {
 	return (
-		<main className="main-gradient flex min-h-[100svh] w-full flex-col gap-5 bg-slate-50 px-10">
+		<main className="main-gradient flex min-h-[100svh] w-full flex-col gap-5 bg-slate-50 px-4 sm:px-10">
 			<header className="flex w-full flex-col items-start justify-center gap-2 py-5">
 				<span className="main-clip text-2xl font-bold">Fubuki</span>
 			</header>
 
-			<section className="flex h-full w-full flex-col gap-6 px-10">
+			<section className="flex h-full w-full flex-col gap-6 px-0 sm:px-10">
 				<form className="flex w-full animate-pulse items-center gap-4">
 					<TextInput
 						type="url"
