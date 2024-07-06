@@ -20,7 +20,7 @@ export type GetOutputs = {
 
 const postInputs = z.object({
 	url: z.string().url(),
-	quality: z.string().optional(),
+	quality: z.string().optional(), // As itag
 	start: z.coerce.number().int().min(0).optional(),
 	end: z.coerce.number().int().min(10).optional(),
 });
@@ -56,11 +56,16 @@ router.post(async (req, _ctx) => {
 		]);
 	}
 
-	const iterator = ytdl(inputs.url, {
-		lang: "pt",
-		quality: inputs.quality || "highest",
-		range: inputs.start || inputs.end ? { start: inputs.start, end: inputs.end } : undefined,
-	}).iterator();
+	const data = await ytdl.getInfo(inputs.url, { lang: "pt" });
+	const quality = ytdl.chooseFormat(data.formats, { quality: inputs.quality || "highest" });
+
+	const iterator = ytdl
+		.downloadFromInfo(data, {
+			lang: "pt",
+			quality: inputs.quality || "highest",
+			range: inputs.start || inputs.end ? { start: inputs.start, end: inputs.end } : undefined,
+		})
+		.iterator();
 
 	const stream = new ReadableStream({
 		async start(controller) {
@@ -71,7 +76,7 @@ router.post(async (req, _ctx) => {
 		},
 	});
 
-	return new Response(stream);
+	return new Response(stream, { headers: { "Content-Type": quality.mimeType || "video/mp4;" } });
 });
 
 const handler = router.handler(handlerConfig);

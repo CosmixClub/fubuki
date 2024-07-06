@@ -5,7 +5,7 @@ import { memo, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { GetOutputs } from "@/app/api/youtube/route";
-import { ActionIcon, AspectRatio, Button, RangeSlider, TextInput } from "@mantine/core";
+import { ActionIcon, AspectRatio, Button, RangeSlider, Select, TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 
 export type ViewProps = {
@@ -35,9 +35,16 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 		setValue,
 		watch,
 		formState: { isSubmitting },
-	} = useForm<Fields>({ defaultValues: { start_end: [0, Number(data.details.lengthSeconds)] } });
+	} = useForm<Fields>({
+		defaultValues: {
+			start_end: [0, Number(data.details.lengthSeconds)],
+			// @ts-expect-error - This is a valid operation
+			quality: String(data.streaming.adaptiveFormats[0].itag),
+		},
+	});
 
 	const start_end = watch("start_end");
+	const quality = watch("quality");
 
 	const download: SubmitHandler<Fields> = useCallback(
 		async fields => {
@@ -46,14 +53,17 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ url }),
+				body: JSON.stringify({ url, quality: fields.quality }),
 			});
+
+			const type = response.headers.get("Content-Type")?.split(";")[0].split("/")[1] || "mp4";
+
 			const blob = await response.blob();
 			const media = URL.createObjectURL(blob);
 
 			const a = document.createElement("a");
 			a.href = media;
-			a.download = data.details.title + "." + "mp4";
+			a.download = data.details.title + "." + type;
 			a.click();
 
 			URL.revokeObjectURL(media);
@@ -108,7 +118,22 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 						<span className="truncate text-sm font-medium text-neutral-800">{data.details.author}</span>
 					</div>
 				</div>
-				<div className="h-full w-full rounded-lg border border-neutral-300 bg-neutral-100 p-2 md:max-w-[25%]">
+				<div className="flex h-full w-full flex-col gap-2 rounded-lg border border-neutral-300 bg-neutral-100/50 p-2 backdrop-blur-sm md:max-w-[25%]">
+					<Select
+						label="Selecione o tipo/qualidade:"
+						placeholder="Selecione:"
+						data={data.streaming.adaptiveFormats.map(val => ({
+							// @ts-expect-error - This is a valid operation
+							value: String(val.itag),
+							// @ts-expect-error - This is a valid operation
+							label: `${val.mimeType.split(";")[0]} - ${val.qualityLabel || val.audioQuality || "Desconhecido"}`,
+						}))}
+						value={quality}
+						// @ts-expect-error - This is a valid operation
+						defaultValue={String(data.streaming.adaptiveFormats[0].itag)}
+						onChange={value => setValue("quality", value || quality)}
+						clearable={false}
+					/>
 					<Button
 						className="w-full"
 						onClick={handleSubmit(download)}
