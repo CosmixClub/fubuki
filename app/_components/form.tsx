@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { memo, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
+import { navigate } from "@/lib/navigate";
 import { Button, TextInput } from "@mantine/core";
 
 type Fields = {
@@ -20,11 +21,8 @@ export const Form: React.FC = memo(function Form({}) {
 
 	const onSubmit: SubmitHandler<Fields> = useCallback(
 		async fields => {
-			let service = "youtube";
-			if (fields.url.includes("tiktok")) service = "tiktok";
-			if (fields.url.includes("instagram")) service = "instagram";
-
-			router.push(`/${service}/${encodeURIComponent(fields.url)}`);
+			const url = navigate(fields.url);
+			router.push(url);
 		},
 		[router],
 	);
@@ -38,7 +36,7 @@ export const Form: React.FC = memo(function Form({}) {
 				<TextInput
 					type="url"
 					label="Insira a URL desejada:"
-					description="Disponível: Youtube e TikTok."
+					description="Disponível: Youtube, TikTok e Instagram."
 					placeholder="Digite aqui:"
 					{...register("url", {
 						required: true,

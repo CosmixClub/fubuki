@@ -5,6 +5,7 @@ import { memo, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { GetOutputs } from "@/app/api/tiktok/route";
+import { navigate } from "@/lib/navigate";
 import { ActionIcon, AspectRatio, Button, TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 
@@ -30,7 +31,8 @@ export const View: React.FC<ViewProps> = memo(function View({ url, data }) {
 
 	const changeUrl: SubmitHandler<Fields> = useCallback(
 		({ url }) => {
-			router.push(`/tiktok/${encodeURIComponent(url)}`);
+			const actualUrl = navigate(url);
+			router.push(actualUrl);
 		},
 		[router],
 	);
